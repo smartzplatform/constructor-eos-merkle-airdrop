@@ -37,7 +37,6 @@ public:
         , _mroot(self, self)
     { }
 
-    // @abi action
     void on(mint const & act) {
         require_auth(act.sender);
 
