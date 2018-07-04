@@ -1,0 +1,11 @@
+.idea/
+
+cmake-build-debug/
+
+tags
+
+data_dir/
+
+node_modules/
+
+.eos-dev/

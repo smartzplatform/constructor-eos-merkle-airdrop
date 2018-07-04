@@ -1,0 +1,24 @@
+{
+  "name": "eos-merkle-airdrop-tests",
+  "version": "0.0.1",
+  "dependencies": {
+    "argparse": "^1.0.10",
+    "axios": "^0.18.0",
+    "binaryen": "^48.0.0",
+    "chai": "^4.1.2",
+    "eosjs": "^15.0.0",
+    "ethereumjs-util": "^5.2.0",
+    "fs": "0.0.1-security",
+    "mocha": "^5.2.0",
+    "to-snake-case": "^1.0.0"
+  },
+  "config": {
+    "eosioKey": "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3",
+    "http": "http://localhost:8888",
+    "chainId": "cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f",
+    "contract_merkle-airdrop": 1
+  },
+  "scripts": {
+    "start": "node node_modules/mocha/bin/mocha ."
+  }
+}
