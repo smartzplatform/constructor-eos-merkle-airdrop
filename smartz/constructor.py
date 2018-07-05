@@ -73,9 +73,14 @@ class Constructor(ConstructorInstance):
     def post_construct(self, fields, abi_array):
 
         function_titles = {
+            'mroot': {
+                'title': 'Merkle root',
+                'sorting_order': 10,
+                'description': 'Merkle root'
+            },
             'setroot': {
                 'title': 'Set Merkle Root',
-                'sorting_order': 10,
+                'sorting_order': 20,
                 'description': 'Set root of Merkle Tree',
                 'inputs': [{
                     'title': 'Merkle root',
@@ -83,7 +88,7 @@ class Constructor(ConstructorInstance):
             },
             'mint': {
                 'title': 'Mint Tokens',
-                'sorting_order': 20,
+                'sorting_order': 30,
                 'description': 'Mint tokens',
                 'inputs': [{
                     'title': 'Sender account name',
@@ -98,7 +103,7 @@ class Constructor(ConstructorInstance):
         return {
             "result": "success",
             'function_specs': function_titles,
-            'dashboard_functions': ['setroot', 'mint']
+            'dashboard_functions': ['setroot', 'mint', 'mroot']
         }
 
 
