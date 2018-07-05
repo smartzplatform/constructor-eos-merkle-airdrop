@@ -40,7 +40,7 @@ class Constructor(ConstructorInstance):
 
                 "tokenContractName": {
                     "title": "Token contract name",
-                    "description": "Name of token contract (1..12 characters, lower case only)"
+                    "description": "Name of token contract (1..12 characters, lower case only)",
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 12,
@@ -62,7 +62,7 @@ class Constructor(ConstructorInstance):
         source = self.__class__._TEMPLATE \
             .replace('%token_symbol%', fields['tokenSymbol']) \
             .replace('%token_decimals%', fields['tokenDecimals']) \
-            .replace('%token_contract%', fields['tokenContract'])
+            .replace('%token_contract%', fields['tokenContractName'])
 
         return {
             "result": "success",
@@ -110,8 +110,8 @@ class Constructor(ConstructorInstance):
 #include <eosiolib/singleton.hpp>
 #include <eosiolib/currency.hpp>
 
-static constexpr uint64_t token_symbol = S(4, EOS); // precision, symbol
-static constexpr account_name token_contract = N(eosio.token); // token contract name
+static constexpr uint64_t token_symbol = S(%token_decimals%, %token_symbol%); // precision, symbol
+static constexpr account_name token_contract = N(%token_contract%); // token contract name
 
 using eosio::asset;
 using eosio::extended_asset;

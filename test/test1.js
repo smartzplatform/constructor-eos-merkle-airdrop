@@ -5,7 +5,7 @@ require('chai').should();
 const MerkleTree = require('./helpers/merkleTree');
 
 
-describe("", () => {
+describe("full cycle", () => {
     let accounts = [];
     let contractAccount = {};
     let merkle = null;
