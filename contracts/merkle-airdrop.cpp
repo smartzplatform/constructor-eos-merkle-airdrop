@@ -13,6 +13,20 @@ using eosio::singleton;
 using eosio::currency;
 
 
+/**
+ *   Uses only for abi generation
+ *   Because by default abi don't generate for singletone<> table
+ */
+namespace abi_stuff {
+
+// @abi table mroot i64
+struct mroot {
+    checksum256 mroot;
+};
+
+} //namespace abi_stuff
+
+
 class merkle_airdrop : public eosio::contract {
 public:
     // @abi action
