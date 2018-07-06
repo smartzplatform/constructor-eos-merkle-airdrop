@@ -1,12 +1,13 @@
 const {sha256, bufferToHex} = require('ethereumjs-util');
 
 class MerkleTree {
-  constructor(elements) {
+  constructor(elements, needDedup = false) {
     // Filter empty strings and hash elements
     this.elements = elements.filter(el => el).map(el => sha256(el));
 
     // Deduplicate elements
-    this.elements = this.bufDedup(this.elements);
+    if (needDedup)
+        this.elements = this.bufDedup(this.elements);
     // Sort elements
     this.elements.sort(Buffer.compare);
 
