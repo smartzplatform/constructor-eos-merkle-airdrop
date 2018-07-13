@@ -61,13 +61,13 @@ class Constructor(ConstructorInstance):
 
         source = self.__class__._TEMPLATE \
             .replace('%token_symbol%', fields['tokenSymbol']) \
-            .replace('%token_decimals%', fields['tokenDecimals']) \
+            .replace('%token_decimals%', str(fields['tokenDecimals'])) \
             .replace('%token_contract%', fields['tokenContractName'])
 
         return {
             "result": "success",
             'source': source,
-            'contract_name': "Merkle Airdrop"
+            'contract_name': "MerkleAirdrop"
         }
 
     def post_construct(self, fields, abi_array):
@@ -84,6 +84,10 @@ class Constructor(ConstructorInstance):
                 'description': 'Set root of Merkle Tree',
                 'inputs': [{
                     'title': 'Merkle root',
+                    'ui:widget': 'merkleRoot',
+                    "ui:options": {
+                        "blockchain": "eos",
+                    }
                 }]
             },
             'mint': {
@@ -96,6 +100,10 @@ class Constructor(ConstructorInstance):
                     'title': 'Tokens amount',
                 },{
                     'title': 'Merkle proof',
+                    'ui:widget': 'merkleProof',
+                    'ui:options': {
+                        'blockchain': 'eos',
+                    }
                 }]
             }
         }
