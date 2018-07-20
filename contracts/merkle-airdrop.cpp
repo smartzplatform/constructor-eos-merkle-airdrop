@@ -7,10 +7,12 @@
 static constexpr uint64_t token_symbol = S(4, EOS); // precision, symbol
 static constexpr account_name token_contract = N(eosio.token); // token contract name
 
+
 using eosio::asset;
 using eosio::extended_asset;
 using eosio::singleton;
 using eosio::currency;
+using eosio::multi_index;
 
 
 /**
@@ -45,10 +47,20 @@ public:
         EOSLIB_SERIALIZE(setroot, (mroot))
     };
 
+    // @abi table
+    struct minted {
+        account_name account;
+
+        auto primary_key() const { return account; }
+
+        EOSLIB_SERIALIZE(minted, (account))
+    };
+
 public:
     merkle_airdrop(account_name self)
         : contract(self)
         , _mroot(self, self)
+        , _minted(self, self)
     { }
 
     void on(mint const & act) {
@@ -56,6 +68,7 @@ public:
 
         eosio_assert(_mroot.exists(), "Merkle root is not exist");
         eosio_assert(act.amount.symbol == token_symbol, "Token symbol mismatch");
+        eosio_assert(_minted.find(act.sender) == _minted.end(), "Already minted");
 
         std::string leaf = eosio::name{act.sender}.to_string() + std::to_string(act.amount.amount);
 
@@ -65,6 +78,10 @@ public:
         eosio_assert(check_proof(leaf_hash, act.proof), "Merkle proof fail");
 
         currency::inline_transfer(_self, act.sender, extended_asset(act.amount, token_contract), "airdrop");
+
+        _minted.emplace(_self, [&](auto & obj) {
+            obj.account = act.sender;
+        });
     }
 
     void on(setroot const & act) {
@@ -91,6 +108,7 @@ public:
 
 protected:
     singleton<N(mroot), checksum256> _mroot;
+    multi_index<N(minted), minted> _minted;
 
     char* hash_cat(const checksum256 & l, const checksum256 & r) {
         static char buf[64];
