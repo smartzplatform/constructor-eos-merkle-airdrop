@@ -132,10 +132,26 @@ class Constructor(ConstructorInstance):
 static constexpr uint64_t token_symbol = S(%token_decimals%, %token_symbol%); // precision, symbol
 static constexpr account_name token_contract = N(%token_contract%); // token contract name
 
+
 using eosio::asset;
 using eosio::extended_asset;
 using eosio::singleton;
 using eosio::currency;
+using eosio::multi_index;
+
+
+/**
+ *   Uses only for abi generation
+ *   Because by default abi don't generate for singletone<> table
+ */
+namespace abi_stuff {
+
+// @abi table mroot i64
+struct mroot {
+    checksum256 mroot;
+};
+
+} //namespace abi_stuff
 
 
 class merkle_airdrop : public eosio::contract {
@@ -156,10 +172,20 @@ public:
         EOSLIB_SERIALIZE(setroot, (mroot))
     };
 
+    // @abi table
+    struct minted {
+        account_name account;
+
+        auto primary_key() const { return account; }
+
+        EOSLIB_SERIALIZE(minted, (account))
+    };
+
 public:
     merkle_airdrop(account_name self)
         : contract(self)
         , _mroot(self, self)
+        , _minted(self, self)
     { }
 
     void on(mint const & act) {
@@ -167,6 +193,7 @@ public:
 
         eosio_assert(_mroot.exists(), "Merkle root is not exist");
         eosio_assert(act.amount.symbol == token_symbol, "Token symbol mismatch");
+        eosio_assert(_minted.find(act.sender) == _minted.end(), "Already minted");
 
         std::string leaf = eosio::name{act.sender}.to_string() + std::to_string(act.amount.amount);
 
@@ -176,12 +203,16 @@ public:
         eosio_assert(check_proof(leaf_hash, act.proof), "Merkle proof fail");
 
         currency::inline_transfer(_self, act.sender, extended_asset(act.amount, token_contract), "airdrop");
+
+        _minted.emplace(_self, [&](auto & obj) {
+            obj.account = act.sender;
+        });
     }
 
     void on(setroot const & act) {
         require_auth(_self);
 
-        //eosio_assert(!_mroot.exists(), "Merkle root already exist");
+        eosio_assert(!_mroot.exists(), "Merkle root already exist");
 
         _mroot.set(act.mroot, _self);
     }
@@ -202,6 +233,7 @@ public:
 
 protected:
     singleton<N(mroot), checksum256> _mroot;
+    multi_index<N(minted), minted> _minted;
 
     char* hash_cat(const checksum256 & l, const checksum256 & r) {
         static char buf[64];
