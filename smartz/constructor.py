@@ -20,6 +20,12 @@ class Constructor(ConstructorInstance):
             ],
             "additionalProperties": False,
 
+            "eosProps": {
+                "permissions": [{
+                    "name": "eosio.code"
+                }]
+            },
+
             "properties": {
                 "tokenSymbol": {
                     "title": "Token symbol",
@@ -175,7 +181,7 @@ public:
     void on(setroot const & act) {
         require_auth(_self);
 
-        eosio_assert(!_mroot.exists(), "Merkle root already exist");
+        //eosio_assert(!_mroot.exists(), "Merkle root already exist");
 
         _mroot.set(act.mroot, _self);
     }
