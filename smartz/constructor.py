@@ -146,8 +146,9 @@ using eosio::multi_index;
  */
 namespace abi_stuff {
 
-// @abi table mroot i64
+// @abi table
 struct mroot {
+    account_name name;
     checksum256 mroot;
 };
 
@@ -195,7 +196,7 @@ public:
         eosio_assert(act.amount.symbol == token_symbol, "Token symbol mismatch");
         eosio_assert(_minted.find(act.sender) == _minted.end(), "Already minted");
 
-        std::string leaf = eosio::name{act.sender}.to_string() + std::to_string(act.amount.amount);
+        std::string leaf = eosio::name{act.sender}.to_string() + " " + std::to_string(act.amount.amount);
 
         checksum256 leaf_hash;
         sha256(const_cast<char*>(leaf.data()), leaf.size(), &leaf_hash);
