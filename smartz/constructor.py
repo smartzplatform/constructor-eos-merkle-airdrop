@@ -109,6 +109,8 @@ class Constructor(ConstructorInstance):
                     'ui:widget': 'merkleProof',
                     'ui:options': {
                         'blockchain': 'eos',
+                        'addressInputPosition': 0,
+                        'tokensInputPosition': 1,
                     }
                 }]
             }
@@ -160,7 +162,7 @@ public:
     // @abi action
     struct mint {
         account_name sender;
-        asset amount;
+        uint64_t amount;
         std::vector<checksum256> proof;
 
         EOSLIB_SERIALIZE(mint, (sender)(amount)(proof))
@@ -193,17 +195,16 @@ public:
         require_auth(act.sender);
 
         eosio_assert(_mroot.exists(), "Merkle root is not exist");
-        eosio_assert(act.amount.symbol == token_symbol, "Token symbol mismatch");
         eosio_assert(_minted.find(act.sender) == _minted.end(), "Already minted");
 
-        std::string leaf = eosio::name{act.sender}.to_string() + " " + std::to_string(act.amount.amount);
+        std::string leaf = eosio::name{act.sender}.to_string() + " " + std::to_string(act.amount);
 
         checksum256 leaf_hash;
         sha256(const_cast<char*>(leaf.data()), leaf.size(), &leaf_hash);
 
         eosio_assert(check_proof(leaf_hash, act.proof), "Merkle proof fail");
 
-        currency::inline_transfer(_self, act.sender, extended_asset(act.amount, token_contract), "airdrop");
+        currency::inline_transfer(_self, act.sender, extended_asset(act.amount, { token_symbol, token_contract }), "airdrop");
 
         _minted.emplace(_self, [&](auto & obj) {
             obj.account = act.sender;
@@ -212,8 +213,6 @@ public:
 
     void on(setroot const & act) {
         require_auth(_self);
-
-        eosio_assert(!_mroot.exists(), "Merkle root already exist");
 
         _mroot.set(act.mroot, _self);
     }

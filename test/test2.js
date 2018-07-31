@@ -48,19 +48,34 @@ describe("large tree", () => {
         }
     });
 
-/*
-    it("build merkle for 100000 leafs and write to file", async function() {
-        this.timeout(10000);
+    it("build merkle for 1000000 leafs and write to file", async function() {
+        this.timeout(50000);
+
+        function randomAddress() {
+            let name = "0x";
+            let possible = "0123456789abcdef";
+
+            for (let i = 0; i < 40; i++)
+                name += possible.charAt(Math.floor(Math.random() * possible.length));
+
+            return name;
+        }
+
+        function generateEthLeafs(count) {
+            leafs = [];
+            for (let i = 0; i < count; ++i)
+                leafs.push(randomAddress() + ' ' + (parseInt(999 * Math.random()) + 1));
+        }
 
         const fs = require('fs');
-        generateLeafs(100000);
+        generateEthLeafs(1000000);
         let tree = new MerkleTree(leafs);
         let data = tree.getHexRoot();
-        leafs.forEach(leaf => data += "\n" + leaf.substr(0, 12) + " 1.0000 EOS");
+        leafs.forEach(leaf => data += "\n" + leaf);
         fs.writeFileSync('merkle_leaf.txt', data);
     });
-*/
 
+/*
     it("read data from file & rebuild merkle & compare roots", async function () {
         this.timeout(10000);
 
@@ -78,7 +93,7 @@ describe("large tree", () => {
             e.should.be.equal("");
         }
     });
-
+*/
 /*
     it("generate 1000000 leafs", async function() {
         this.timeout(10000);
